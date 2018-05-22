@@ -1,0 +1,38 @@
+#include <stdlib.h>
+#include <stdio.h>
+
+
+int main()
+{
+	int esp, i=0;
+	char original[10];
+
+	printf("Cadenas original: ");
+	gets(original);
+	printf("Desplazamiento: ");
+	scanf("%d",&esp);
+	while(original[i]!='\0')
+		{
+		switch(original[i])
+		{
+		case ' ':
+			original[i]=' ';
+			break;
+		case '.':
+			original[i]='.';
+			break;
+		case ',':
+			original[i]=',';
+			break;
+		default:
+			original[i]=original[i]+esp;
+			break;
+		}
+		i++;
+		}
+	printf("Cadena cifrada: ");
+	puts(original);
+
+	return 0;
+
+}
