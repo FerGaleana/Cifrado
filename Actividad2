@@ -1,0 +1,167 @@
+/*
+ * 23/05/2018
+ * Aritmética de apuntadores y estructuras
+ * Actividad
+ */
+
+#include <stdlib.h>
+#include <stdio.h>
+
+typedef struct
+{
+	int expediente;
+	char nombre[50];
+	int carrera;
+	int edad;
+}Alumno;
+int M();
+int Buscar();
+int Registrar(int,Alumno *al);
+void Imprimir(int,Alumno *al);
+void Eliminar(Alumno *al);
+void Search(int reg,Alumno *al);
+
+int main()
+{
+	setvbuf(stderr, NULL, _IONBF, 0);
+	setvbuf(stdout, NULL, _IONBF, 0);
+	int opc,registrados=0;
+	Alumno alumnos[20];
+	Alumno *al;
+	al=alumnos;
+	do{
+		opc=M();
+		switch(opc)
+		{
+		case 1:
+			registrados+=Registrar(registrados,al);
+			break;
+		case 2:
+			Imprimir(registrados,al);
+			break;
+		/*case 3:
+			Eliminar(al);
+			break;*/
+		case 4:
+			Search(registrados,al);
+			break;
+		}
+	}while(opc!=5);
+
+
+	system("PAUSE");
+	return 0;
+
+}
+int M()
+{
+	int opc;
+	printf("Menú\n[1]Registrar nuevo alumno\n[2]Imprimir datos\n[3]Eliminar alumno\n[4]Buscar alumno\n[5]Salir\n");
+	scanf("%d",&opc);
+	while(opc<1||opc>5)
+	{
+		printf("Elija una opción válida.");
+		scanf("%d",&opc);
+	}
+	return opc;
+}
+
+int Buscar()
+{
+	int o;
+	printf("[1]Por expediente\n[2]Por edad\n");
+	scanf("%d",&o);
+	while(o<1||o>2)
+	{
+	printf("Elija una opción válida.");
+	scanf("%d",&o);
+	};
+	return o;
+}
+int Registrar(int reg,Alumno *al)
+{
+	int n;
+	printf("¿Cuántos alumnos desea registrar?");
+	scanf("%d",&n);
+	for(int i=0;i<n;i++)
+	{
+		int j=i+reg;
+		printf("Alumno #%d\n", reg+i+1);
+		printf("Expediente: ");
+		scanf("%d", &(al+j)->expediente);
+		printf("Nombre: ");
+		fflush(stdin);
+		gets((al+j)->nombre);
+		printf("Carrera: ");
+		scanf("%d", &(al+j)->carrera);
+		printf("Edad: ");
+		scanf("%d", &(al+j)->edad);
+	}
+	return n;
+}
+void Imprimir(int reg,Alumno *al)
+{
+	for(int i=0; i<reg;i++)
+	{
+		printf("Alumno #%d\n", i+1);
+		printf("Expediente: %d\n",(al+i)->expediente);
+		printf("Nombre: ");
+		puts((al+i)->nombre);
+		printf("Carrera: %d\n",(al+i)->carrera);
+		printf("Edad: %d\n",(al+i)->edad);
+	}
+}
+/*int Eliminar()
+{
+	int num;
+	printf("¿Qué número de alumno desea eliminar?");
+	scanf("%d",&num);
+
+
+}*/
+void Search(int reg, Alumno *al)
+{
+	int op,i,e,c=0;
+	op=Buscar();
+	if(op==1)
+	{
+		printf("Expediente: ");
+		scanf("%d",&e);
+		for(int j=0;j<reg;j++)
+		{
+			if((al+j)->expediente==e)
+			{
+				i=j;
+				c=1;
+				break;
+			}
+
+		}
+	}
+	else if(op==2)
+	{
+		printf("Edad: ");
+		scanf("%d",&e);
+		for(int j=0;j<reg;j++)
+			{
+				if((al+j)->edad==e)
+				{
+					i=j;
+					c++;
+					break;
+				}
+			}
+	}
+
+	if(c==0)
+		printf("No se encontró ninguna coincidencia dentro del registro.\n");
+	else
+	{
+		printf("Alumno #%d\n", i+1);
+		printf("Expediente: %d\n",(al+i)->expediente);
+		printf("Nombre: ");
+		puts((al+i)->nombre);
+		printf("Carrera: %d\n",(al+i)->carrera);
+		printf("Edad: %d\n",(al+i)->edad);
+	}
+}
