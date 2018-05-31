@@ -1,0 +1,138 @@
+/*Tarea 1-Programación con Memoria Dinámica
+ *Manejo de Apuntadores
+ * 30/05/2018
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct{
+	char nombre[15];
+	float calificacion;
+}Profesor;
+
+float averageArray(Profesor *a,int *n);
+void readArray(Profesor *a,int *n);
+void mergeArrays(Profesor *a,int *an,Profesor *b,int *bn,Profesor *c,int *cn);
+void sortArray(Profesor *a,int *n);
+void printArray(Profesor *a,int *n);
+
+int main(){
+	setvbuf(stderr, NULL, _IONBF, 0);
+	setvbuf(stdout, NULL, _IONBF, 0);
+	Profesor arr1[20];
+	Profesor arr2[20];
+	Profesor arr3[40];
+	Profesor *a1,*a2,*a3;
+	a1=arr1;
+	a2=arr2;
+	a3=arr3;
+
+	int n1,n2,n3;
+	printf("Profesores de Ingenierías\n¿Cuántos elementos desea ingresar?");
+	scanf("%d",&n1);
+	readArray(a1,&n1);
+	printf("Profesores de otras áreas\n¿Cuántos elementos desea ingresar?");
+	scanf("%d",&n2);
+	readArray(a2,&n2);
+	n3=n1+n2;
+	mergeArrays(a1,&n1,a2,&n1,a3,&n3);
+	sortArray(a3,&n3);
+	printArray(a3,&n3);
+
+	return 0;
+
+}
+float averageArray(Profesor *a,int *n){
+	int N=*n;
+	float promedio=0;
+	for(int i=0;i<N;i++)
+		promedio+=(a+i)->calificacion;
+	return promedio/N;
+}
+void readArray(Profesor *a,int *n){
+	int N=*n;
+	for(int i=0;i<N;i++)
+	{
+		printf("Nombre: ");
+		fflush(stdin);
+		gets((a+i)->nombre);
+		printf("Calificación: ");
+		scanf("%f",&(a+i)->calificacion);
+	}
+
+}
+void mergeArrays(Profesor *a,int *an,Profesor *b,int *bn,Profesor *c,int *cn){
+	int k=0;
+	int CN=*cn;
+	int AN=*an;
+	for(int i=0;i<CN;i++){
+		if(i<AN){
+			strcpy((c+i)->nombre,(a+i)->nombre);
+			(c+i)->calificacion=(a+i)->calificacion;
+		}
+		else{
+			strcpy((c+i)->nombre,(b+k)->nombre);
+			(c+i)->calificacion=(b+k)->calificacion;
+			k++;
+		}
+	}
+
+}
+void sortArray(Profesor *a,int *n){
+	int N=*n;
+	Profesor temp;
+	Profesor *t;
+	t=&temp;
+	int c;
+	//Acomodar por nombres
+	for(int k=0;k<N;k++)
+	{
+		c=1;
+		for(int l=k+1;l<N;l++)
+		{
+			if(strcmp((a+k)->nombre,(a+l)->nombre)==0)
+			{
+				strcpy(t->nombre,(a+k+c)->nombre);
+				t->calificacion=(a+k+c)->calificacion;
+				strcpy((a+k+c)->nombre,(a+l)->nombre);
+				(a+k+c)->calificacion=(a+l)->calificacion;
+				strcpy((a+l)->nombre,t->nombre);
+				(a+l)->calificacion=t->calificacion;
+				c++;
+			}
+		}
+		if(c>1)
+		{
+			(a+k)->calificacion=averageArray((a+k),&c);
+			for(int i=k+1;i<N;i++)
+					{
+						strcpy((a+i)->nombre,(a+i+c-1)->nombre);
+						(a+i)->calificacion=(a+i+c-1)->calificacion;
+					}
+			N-=(c-1);
+		}
+	}
+
+	for(int i=0;i<N;i++)
+		for(int j=0;j<N-1;j++)
+		{
+			if((a+j)->calificacion<(a+j+1)->calificacion)
+			{
+				strcpy(t->nombre,(a+j)->nombre);
+				t->calificacion=(a+j)->calificacion;
+				strcpy((a+j)->nombre,(a+j+1)->nombre);
+				(a+j)->calificacion=(a+j+1)->calificacion;
+				strcpy((a+j+1)->nombre,t->nombre);
+				(a+j+1)->calificacion=t->calificacion;
+			}
+		}
+	*n=N;
+}
+void printArray(Profesor *a,int *n){
+	int N=*n;
+	for(int i=0;i<N;i++){
+		printf("%s\t%.2f\n",(a+i)->nombre,(a+i)->calificacion);
+	}
+
+}
