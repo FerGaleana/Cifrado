@@ -1,0 +1,58 @@
+/*
+ * Tarea 2 PMD
+ * Hilos-Calculadora de pi (10 decimales)
+*/
+#include <windows.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#define MAX 50000000000
+typedef struct{
+	long long st;
+	long long f;
+	double temp;
+}Pi;
+
+DWORD WINAPI Serie(void *);
+int main(){
+	setvbuf(stderr, NULL, _IONBF, 0);
+	setvbuf(stdout, NULL, _IONBF, 0);
+	HANDLE h[16]={NULL};
+	int opc;
+	Pi pi[16];
+	double final=0;
+	printf("Número de hilos: ");
+	scanf("%d",&opc);
+
+	clock_t start=clock();
+	for(int i=0;i<opc;i++){
+		pi[i].st=(MAX/opc)*i+1;
+		pi[i].f=(MAX/opc)*(i+1);
+		pi[i].temp=0;
+		h[i]=CreateThread(NULL, 0, Serie,(void *)&pi[i],0,NULL);
+	}
+	for(int i=0;i<opc;i++){
+		WaitForSingleObject(h[i],INFINITE);
+	}
+	for(int j=0;j<opc;j++){
+		final+=pi[j].temp;
+	}
+	clock_t stop=clock();
+	int tiempo=1000*(stop-start)/CLOCKS_PER_SEC;
+	printf("Pi=%.10lf\n",final);
+	printf("Tiempo: %d ms",tiempo);
+	return 0;
+}
+DWORD WINAPI Serie(void *p){
+	Pi *pi=(Pi*)p;
+	long long i;
+	for(i=pi->st;i<=pi->f;i++){
+		if(((i+1)%2)==0){
+			pi->temp+=(4/(2*(float)i-1));
+		}
+		else{
+			pi->temp-=(4/(2*(float)i-1));
+		}
+	}
+	return 0;
+}
