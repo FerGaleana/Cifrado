@@ -1,0 +1,128 @@
+/*
+ * Fernanda Galena
+ * Expresiones de formato infijo a posfijo
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <Stack.h>
+#include <Queue.h>
+
+
+
+char* InfixToPosfix(char *exp);
+bool hasHigherPrecedence(char* top, char* operator);
+
+int main(){
+	setvbuf(stderr, NULL, _IONBF, 0);
+	setvbuf(stdout, NULL, _IONBF, 0);
+
+	char exp[100];
+	printf("Expresión aritmética en notación infija: ");
+	gets(exp);
+
+	InfixToPosfix(exp);
+	printf("Expresión en notación posfija: ");
+	puts(exp);
+
+	return 0;
+}
+char* InfixToPosfix(char *exp){
+	Stack pila=createStack();  //Crear pila vacía
+	Queue result=queue_create(); //Crear fila vacía
+	char* temp; //Temporal para el tope de la pila
+	int i=0; //Iterador
+	char new[100]; //Cadena de caracteres para la expresión nueva
+	//Mientras que la cadena no llegue al fin, reposicionar los caracteres de esta
+	while(exp[i]!='\0'){
+		if(exp[i]=='('){ //Si se encuentra un paréntesis de apertura, meterlo en la pila
+			push(pila,(void*)&exp[i]);
+		}
+		//Si se encuentra un operador...
+		else if(exp[i]=='+'||exp[i]=='-'||exp[i]=='*'||exp[i]=='/'){
+			temp=(char*)top(pila);
+			//Mientras que la pila no esté vacía ni el tope sea un paréntesis de apertura,
+			//evaluar que el operador del tope de la pila tenga mayor precedencia que el operador actual
+			//Si es así, se ingresa este a la cola resultante
+			while(isEmpty(pila)==false&&*temp!='('){
+				if(hasHigherPrecedence(temp,&exp[i])==true){
+					temp=(char*)pop(pila);
+					offer(result,(void*)temp);
+				}
+				else
+					break;
+			}
+			//meter el operador a la pila
+			push(pila,(void*)&exp[i]);
+		}
+		//Si se encuentra un paréntesis de cierre, vaciar la pila hasta encontrar un paréntesis de apertura
+		//Ingresar esos datos a la cola (operadores)
+		else if(exp[i]==')'){
+			temp=(char*)top(pila);
+			while(isEmpty(pila)==false&&*temp!='('){
+				temp=(char*)pop(pila);
+				if(*temp!='('){
+				offer(result,(void*)temp);
+				}
+			}
+			while(isEmpty(pila)==false&&*temp=='('){
+				temp=(char*)pop(pila);
+				if(*temp!='(')
+					offer(result,(void*)temp);
+			}
+		}
+		else{//Meter a la cola letras y números
+			offer(result,(void*)&exp[i]);
+		}
+		i++;
+	}
+	i=0;
+	//Copiar lo que hay en la cola a una nueva cadena
+	while(QueueisEmpty(result)==False){
+		temp=(char*)Poll(result);
+		new[i]=*temp;
+		i++; //aumentar iterador para acceder al siguiente caracter
+	}
+	destroyStack(pila); //destruir pila
+	destroy(result); //destruir cola
+	new[i]='\0'; //Marcar el finalizador de cadena
+	strcpy(exp,new); //Copiar el contenido de la expresión nueva a la dirección de memoria de la original
+
+
+	return exp;
+}
+bool hasHigherPrecedence(char* top, char* operator){
+	int t, op;
+	switch(*top){
+	case '*':
+		t=1;
+		break;
+	case '/':
+		t=2;
+		break;
+	case '+':
+		t=3;
+		break;
+	case '-':
+		t=4;
+		break;
+	}
+	switch(*operator){
+	case '*':
+		op=1;
+		break;
+	case '/':
+		op=2;
+		break;
+	case '+':
+		op=3;
+		break;
+	case '-':
+		op=4;
+		break;
+	}
+	if(t<=op)
+		return true;
+	else
+		return false;
+}
