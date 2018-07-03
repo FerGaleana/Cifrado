@@ -1,0 +1,67 @@
+/*
+ * Fernanda Galeana
+ * Balanceador de expresiones aritméticas
+ */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <Stack.h>
+#include <Queue.h>
+
+bool BalancedBrackets(char* exp);
+
+int main(){
+	setvbuf(stderr, NULL, _IONBF, 0);
+	setvbuf(stdout, NULL, _IONBF, 0);
+
+	char exp[100];
+	printf("Expresión aritmética: ");
+	gets(exp);
+	int i=0;
+
+	if(BalancedBrackets(exp)==false)
+		printf("La expresión no está balanceada.\n");
+	else
+		printf("La expresión está balanceada.\n");
+
+	return 0;
+}
+//Función para verificar que las expresiones están balanceadas. Devuelve true si lo están, false de no estarlo
+bool BalancedBrackets(char* exp){
+	Stack s1=createStack(); //Creación de una pila vacía
+	int i=0;  //Iterador
+	char *temp; //Temporal para guardar el caracter que se encuentra en el topa
+	//Mientras que la cadena no se acabe...
+	while(exp[i]!='\0'){
+		//Si se encuentran el paréntesis o corchete de apertura, se envían a la pila
+		if(exp[i]=='('||exp[i]=='['){
+			push(s1,(void*)&exp[i]);
+		}
+		//Si se encuentra el paréntesis o corchete de cierre....
+		else if(exp[i]==')'||exp[i]==']'){
+			//Si la pila está vacía, entonces no están balanceados. Devuelve false.
+			if(isEmpty(s1)==true)
+				return false;
+			//De lo contrario, se saca el dato que está en el tope de la pila
+			temp=(char*)pop(s1);
+			//Si este dato es el contrario del que se recuperó, se continúa. De lo contrario, significa que no están balanceados
+			//así que se devuelve false
+			if(exp[i]==')'&&(*temp)!='('){
+				return false;
+			}
+			else if(exp[i]==']'&&(*temp)!='['){
+				return false;
+			}
+		}
+
+			i++;
+	}
+	//Si al final quedaron datos en la pila, entonces no están balanceados. Se devuelve false.
+	if(isEmpty(s1)==false){
+		return false;
+	}
+
+	destroyStack(s1); //Destrur la pila
+	//Devuelve true si pasó todas las demás pruebas, es decir, si está balanceada
+	return true;
+}
